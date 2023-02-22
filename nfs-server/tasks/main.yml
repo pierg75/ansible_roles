@@ -1,32 +1,20 @@
 ---
 # tasks file for nfs-server
 
-- name: Create export directories
-  ansible.builtin.file:
-    path: "{{ base_dir }}{{ item }}"
-    state: directory
-    mode: '0777'
-  loop: "{{ range(number_exports) }}"
-    
-- name: Install nfs packages (RHEL6/7)
-  ansible.builtin.package:
-    name: nfs-utils, tcpdump, wireshark, policycoreutils-python
-    state: latest
-  when: ansible_facts['distribution'] == "RedHat" and ansible_facts['distribution_major_version'] | int <= 7
-
-- name: Install nfs packages (RHEL8+)
-  ansible.builtin.package:
-    name: nfs-utils, tcpdump, wireshark-cli, policycoreutils-python-utils
-    state: latest
-  when: ansible_facts['distribution'] == "RedHat" and ansible_facts['distribution_major_version'] | int >= 8
-
-- name: Configure the exports
-  ansible.builtin.template:
-    src: templates/exports.j2
+- name: Make sure /etc/exports is empty
+  ansible.builtin.copy:
+    content: ""
     dest: /etc/exports
-    owner: root
+    force: true
     group: root
-    mode: '0644'
+    owner: root
+    mode: 0644
+
+- import_tasks: all_same_options.yml
+  when: all_same_options is defined
+
+- import_tasks: list_of_shares.yml
+  when: list_of_shares is defined
 
 - name: Start nfs service (RHEL6)
   ansible.builtin.service:

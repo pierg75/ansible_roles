@@ -12,15 +12,19 @@ Role Variables
 --------------
 
 The role uses these variables:
-
 ```
-number_exports: 3
-base_dir: /exports/test  
-allowed_address: "*"
-export_options: "rw,async,no_root_squash"
+        all_same_options:
+          base_dir: /exports/test
+          allowed_address: "*"
+          number_exports: 5
+          export_options: "rw,sync,no_root_squash"
+```
+And
+```
 ```
 
-If you want to modify any of these, set the roles variables or the hosts/group vars.
+The first dictionary "all_same_options" is used when you want to export shares that have the same options
+and naming.
 Note that these variables will be used for every export, so in this case it will end up with exports like:
 ```
 # exportfs -v
@@ -28,6 +32,14 @@ Note that these variables will be used for every export, so in this case it will
 /exports/test1  <world>(async,wdelay,hide,no_subtree_check,sec=sys,rw,secure,no_root_squash,no_all_squash)
 /exports/test2  <world>(async,wdelay,hide,no_subtree_check,sec=sys,rw,secure,no_root_squash,no_all_squash)
 ```
+
+The second dictionary "list_of_shares" is used instead when you just want to have a list of shares which 
+have diverse options and names.
+
+NOTE: you have to substitute all the entries of the dictionary and not only some (an error will be returned
+      in case).
+
+If you want to modify any of these, set the roles variables or the hosts/group vars.
 
 Dependencies
 ------------
@@ -47,8 +59,11 @@ A possible playbook with custom options is:
   roles:
     - role: nfs-server
       vars:
-        number_exports: 5
-        export_options: "rw,sync,no_root_squash"
+        all_same_options:
+          base_dir: /exports/test
+          allowed_address: "*"
+          number_exports: 5
+          export_options: "rw,sync,no_root_squash"
 ```
 
 License
