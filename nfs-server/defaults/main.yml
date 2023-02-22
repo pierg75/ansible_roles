@@ -1,0 +1,7 @@
+---
+# defaults file for nfs-server
+
+number_exports: 3
+base_dir: /exports/test  
+allowed_address: "*"
+export_options: "rw,async,no_root_squash"

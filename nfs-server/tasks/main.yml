@@ -1,0 +1,60 @@
+---
+# tasks file for nfs-server
+
+- name: Create export directories
+  ansible.builtin.file:
+    path: "{{ base_dir }}{{ item }}"
+    state: directory
+    mode: '0777'
+  loop: "{{ range(number_exports) }}"
+    
+- name: Install nfs packages (RHEL6/7)
+  ansible.builtin.package:
+    name: nfs-utils, tcpdump, wireshark, policycoreutils-python
+    state: latest
+  when: ansible_facts['distribution'] == "RedHat" and ansible_facts['distribution_major_version'] | int <= 7
+
+- name: Install nfs packages (RHEL8+)
+  ansible.builtin.package:
+    name: nfs-utils, tcpdump, wireshark-cli, policycoreutils-python-utils
+    state: latest
+  when: ansible_facts['distribution'] == "RedHat" and ansible_facts['distribution_major_version'] | int >= 8
+
+- name: Configure the exports
+  ansible.builtin.template:
+    src: templates/exports.j2
+    dest: /etc/exports
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Start nfs service (RHEL6)
+  ansible.builtin.service:
+    name: nfs
+    state: restarted
+  when: ansible_facts['distribution'] == "RedHat" and ansible_facts['distribution_major_version'] | int <= 6
+
+- name: Start nfs service (RHEL7+)
+  ansible.builtin.service:
+    name: nfs-server
+    state: restarted
+  when: ansible_facts['distribution'] == "RedHat" and ansible_facts['distribution_major_version'] | int >= 7
+
+- name: collect facts about system services
+  ansible.builtin.service_facts:
+  register: services_state
+
+- name: Allow nfs traffic
+  ansible.posix.firewalld:
+    service: nfs, nfs3
+    permanent: true
+    state: enabled
+    immediate: true
+  when: services_state['services']['firewalld.service'] is defined and services_state['services']['firewalld.service']['state'] == "running"
+
+- name: Set some useful selinux bools
+  ansible.posix.seboolean:
+    name: httpd_use_nfs, use_nfs_home_dirs, virt_use_nfs, git_cgi_use_nfs
+    state: true
+    persistent: true
+  when: ansible_facts['ansible_selinux'] is defined and ansible_facts['ansible_selinux']['status'] == "enabled"
