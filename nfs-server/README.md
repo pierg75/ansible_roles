@@ -44,7 +44,16 @@ If you want to modify any of these, set the roles variables or the hosts/group v
 Dependencies
 ------------
 
-No specific dependencies.
+This role requires ansible.posix.firewalld. Depending where it's used, you may need to install the `ansible.posix`
+collection. You can create a requirements file with:
+```
+collections:
+  - name: ansible.posix
+```
+And run:
+```
+# ansible-galaxy install -r requirements.yml
+```
 
 Example Playbook
 ----------------
