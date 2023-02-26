@@ -21,6 +21,16 @@ The role uses these variables:
 ```
 And
 ```
+        list_of_shares:
+          - exportdir: "/export/blah1"
+            allowed_address: "*"
+            export_options: "rw,async,no_root_squash"
+          - exportdir: "/export/blah2"
+            allowed_address: "192.168.0.1"
+            export_options: "rw,async,no_root_squash"
+          - exportdir: "/export/blah3"
+            allowed_address: "10.0.0.1"
+            export_options: "rw,async,no_root_squash"
 ```
 
 The first dictionary "all_same_options" is used when you want to export shares that have the same options
@@ -35,6 +45,13 @@ Note that these variables will be used for every export, so in this case it will
 
 The second dictionary "list_of_shares" is used instead when you just want to have a list of shares which 
 have diverse options and names.
+In the second case you will end up with this these exports:
+```
+# exportfs -v
+/exports/blah1  <world>(async,wdelay,hide,no_subtree_check,sec=sys,rw,secure,no_root_squash,no_all_squash)
+/exports/blah2  192.168.0.1(async,wdelay,hide,no_subtree_check,sec=sys,rw,secure,no_root_squash,no_all_squash)
+/exports/blah3  10.0.0.1(async,wdelay,hide,no_subtree_check,sec=sys,rw,secure,no_root_squash,no_all_squash)
+```
 
 NOTE: you have to substitute all the entries of the dictionary and not only some (an error will be returned
       in case).
