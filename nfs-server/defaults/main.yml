@@ -7,7 +7,6 @@ all_same_options:
   allowed_address: "*"
   export_options: "rw,async,no_root_squash"
 
-
 #list_of_shares:
   #  - "/exports/testx  * rw,async,no_root_squash"
   #  - "/exports/testy  * rw,async,no_root_squash"

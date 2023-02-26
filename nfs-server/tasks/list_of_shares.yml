@@ -4,13 +4,13 @@
 
 - name: Create export directories
   ansible.builtin.file:
-    path: "{{ base_dir }}{{ item }}"
+    path: "{{ item.exportdir }}"
     state: directory
     mode: '0777'
-  loop: "{{ range(number_exports) }}"
+  loop: "{{ list_of_shares }}"
 
 - name: Configure the exports
   ansible.builtin.lineinfile:
     path: /etc/exports
-    line: "{{ item }}"
+    line: "{{ item.exportdir }}     {{ item.allowed_address }}({{ item.export_options }})"
   loop: "{{ list_of_shares }}"
