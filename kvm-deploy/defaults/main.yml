@@ -1,0 +1,12 @@
+---
+base_image_name: Fedora-Server-KVM-38-1.6.x86_64.qcow2
+base_image_url: https://download.fedoraproject.org/pub/fedora/linux/releases/38/Server/x86_64/images/
+base_image_sha: fe07c4885c6a224e5527c6eccd0ada07c858a0eec2135e1c9ccd02c26eec408d
+libvirt_pool_dir: "/mnt/vms"
+vm_name: f38-minikube
+vm_vcpus: 8
+vm_ram_mb: 16384
+vm_net: default
+vm_root_pass: test123
+cleanup_tmp: no
+ssh_key: /root/.ssh/id_rsa.pub
