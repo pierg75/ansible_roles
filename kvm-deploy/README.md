@@ -27,7 +27,12 @@ vm_net: default
 vm_root_pass: test123
 cleanup_tmp: no
 ssh_key: /root/.ssh/id_rsa.pub
+nested: true|false
 ```
+
+Setting nested to true will enable the cpu-passthrough in the guest vm, enabling nesting virtualization.
+This still requires that the hypervisor is configured to so so ("options kvm_intel nested=1" for Intel
+or "options kvm_amd nested=1" for AMD, in modprobe)
 
 Dependencies
 ------------
